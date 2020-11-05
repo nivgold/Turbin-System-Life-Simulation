@@ -248,7 +248,9 @@ def ex1_d():
     frequency_estimators = defaultdict(list)
 
     for i in range(100):
+        # setting the seed
         seed = i
+        np.random.seed(seed)
         components_estimators = create_simulation_estimators(500, halton=False, to_print=False, **components_params)
 
         blade_estimators['mu'].append(components_estimators['blade'][0])
