@@ -25,28 +25,28 @@ components_params = {'blade': blade, 'gearbox': gearbox, 'generator': generator,
 
 def print_estimators(**kwargs):
     print('-' * 100)
-    print('Blade\nNormal Distribution params estimations:\nReal mu:%s, sigma:%s\nEstimated mu:%s, sigma:%s\ntime:%s' % kwargs['blade'])
+    print('Blade\nNormal Distribution params estimations:\nReal mu:%s, sigma:%s\nEstimated mu:%.3f sigma:%.3f\ntime:%s' % kwargs['blade'])
 
     print('-' * 100)
-    print('Gearbox\nLogarithmic Normal Distribution params estimations:\nReal params mu:%s, sigma:%s\nEstimated mu:%s, sigma:%s\ntime:%s' % kwargs['gearbox'])
+    print('Gearbox\nLogarithmic Normal Distribution params estimations:\nReal params mu:%s, sigma:%s\nEstimated mu:%.3f sigma:%.3f\ntime:%s' % kwargs['gearbox'])
 
     print('-' * 100)
-    print('Generator\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%s, m:%s\ntime:%s' % kwargs['generator'])
+    print('Generator\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%.3f m:%.3f\ntime:%s' % kwargs['generator'])
 
     print('-' * 100)
-    print('Yaw\nGumbel Distribution params estimations:\nReal mu:%s, beta:%s\nEstimated mu:%s, beta:%s\ntime:%s' % kwargs['yaw'])
+    print('Yaw\nGumbel Distribution params estimations:\nReal mu:%s, beta:%s\nEstimated mu:%.3f beta:%.3f\ntime:%s' % kwargs['yaw'])
 
     print('-' * 100)
-    print('Pitch\nNormal Distribution params estimations:\nReal mu:%s, sigma:%s\nEstimated mu:%s, sigma:%s\ntime:%s' % kwargs['pitch'])
+    print('Pitch\nNormal Distribution params estimations:\nReal mu:%s, sigma:%s\nEstimated mu:%.3f sigma:%.3f\ntime:%s' % kwargs['pitch'])
 
     print('-' * 100)
     print('Brake\nExponential Distribution params estimations:\nReal lambda:%s\nEstimated lambda:%s\ntime:%s' % kwargs['brake'])
 
     print('-' * 100)
-    print('Lubrication\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%s, m:%s\ntime:%s' % kwargs['lubrication'])
+    print('Lubrication\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%.3f m:%.3f\ntime:%s' % kwargs['lubrication'])
 
     print('-' * 100)
-    print('Electrical\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%s, m:%s\ntime:%s' % kwargs['electrical'])
+    print('Electrical\nWeibull Distribution params estimations:\nReal ni:%s, m:%s\nEstimated ni:%.3f m:%.3f\ntime:%s' % kwargs['electrical'])
 
     print('-' * 100)
     print('Frequency\nExponential Distribution params estimations:\nReal lambda:%s\nEstimated lambda:%s\ntime:%s' % kwargs['frequency'])
@@ -409,8 +409,8 @@ def ex2_b(components_estimators, minimum_dist):
         print()
 
 if __name__ == '__main__':
-    ex1_b()
-    ex1_c()
-    ex1_d()
-    ex1_e()
+    # ex1_b()
+    # ex1_c()
+    # ex1_d()
+    # ex1_e()
     ex2_b(*ex2_a())
