@@ -37,6 +37,17 @@ class LogNormalDist:
         else:
             return mu_estimator, sigma_estimator
 
+
+    @staticmethod
+    def estimate_from_sample(dist_randoms):
+        n = len(dist_randoms)
+        dist_randoms = np.array(dist_randoms)
+
+        mu_estimator = np.sum(np.log(dist_randoms)) / len(dist_randoms)
+        sigma_estimator = np.sqrt(np.sum(np.power(np.log(dist_randoms) - mu_estimator, 2)) / len(dist_randoms))
+
+        return mu_estimator, sigma_estimator
+
     def _generate_numbers(self, ksi1, ksi2):
         t1 = np.sqrt(-2*np.log(ksi1)) * np.sin(2*np.pi*ksi2)
         t1 = t1 * self.sigma + self.mu

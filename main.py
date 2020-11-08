@@ -314,6 +314,11 @@ def ex1_d():
     normalic_confidence(**lubrication_estimators)
 
     print('-' * 100)
+    print("Electrical Confidences:")
+    empiric_confidence(**electrical_estimators)
+    normalic_confidence(**electrical_estimators)
+
+    print('-' * 100)
     print("Frequency Confidences:")
     empiric_confidence(**frequency_estimators)
     normalic_confidence(**frequency_estimators)
@@ -345,72 +350,120 @@ def ex2_a():
 
     # estimating the parameters from 500 sample
     components_estimators, minimum_dist = create_simulation_estimators(500, halton=True, to_print=False, calculate_minimum_dist=True, **components_params)
-    return components_estimators, minimum_dist
 
-def ex2_b(components_estimators, minimum_dist):
+    dist_esitmators = {}
+
+    exponential_dist = ExponentialDist.estimate_from_sample(minimum_dist)
+    dist_esitmators['exponential'] = {'lmd': exponential_dist}
+
+    gumbel_dist = GumbelDist.estimate_from_sample(minimum_dist)
+    dist_esitmators['gumbel'] = {'mu': gumbel_dist[0], 'beta': gumbel_dist[1]}
+
+    lognorm_dist = LogNormalDist.estimate_from_sample(minimum_dist)
+    dist_esitmators['lognorm'] = {'mu': lognorm_dist[0], 'sigma': lognorm_dist[1]}
+
+    normal_dist = NormalDist.estimate_from_sample(minimum_dist)
+    dist_esitmators['normal'] = {'mu': normal_dist[0], 'sigma': normal_dist[1]}
+
+    weibull_dist = WeibullDist.estimate_from_sample(minimum_dist)
+    dist_esitmators['weibull'] = {'ni': weibull_dist[0], 'm':weibull_dist[1]}
+
+    print(dist_esitmators)
+
+    return dist_esitmators, minimum_dist
+
+def ex2_b(dist_estimators, minimum_dist):
     print('+' + '-' * 98 + '+')
     print('|' + ' ' * 46 + 'ex. 2b' + ' ' * 46 + '|')
     print('+' + '-' * 98 + '+')
-
-    components_samples_dict = {}
-
-    blade_dist = NormalDist(components_estimators['blade'][0], components_estimators['blade'][1])
-    components_samples_dict[('Blade', 'Normal')] = blade_dist.generate_sample(500)
-
-    gearbox_dist = LogNormalDist(components_estimators['gearbox'][1], components_estimators['gearbox'][1])
-    components_samples_dict[('Gearbox', 'Logarithmic Normal')] = gearbox_dist.generate_sample(500)
-
-    generator_dist = WeibullDist(components_estimators['generator'][0], components_estimators['generator'][1])
-    components_samples_dict[('Generator', 'Weibull')] = generator_dist.generate_sample(500)
-
-    yaw_dist = GumbelDist(components_estimators['yaw'][0], components_estimators['yaw'][1])
-    components_samples_dict[('Yaw', 'Gumbel')] = yaw_dist.generate_sample(500)
-
-    pitch_dist = NormalDist(components_estimators['pitch'][0], components_estimators['pitch'][1])
-    components_samples_dict[('Pitch', 'Normal')] = pitch_dist.generate_sample(500)
-
-    brake_dist = ExponentialDist(components_estimators['brake'])
-    components_samples_dict[('Brake', 'Exponential')] = brake_dist.generate_sample(500)
-
-    lubrication_dist = WeibullDist(components_estimators['lubrication'][0], components_estimators['lubrication'][1])
-    components_samples_dict[('Lubrication', 'Weibull')] = lubrication_dist.generate_sample(500)
-
-    electrical_dist = WeibullDist(components_estimators['electrical'][0], components_estimators['electrical'][1])
-    components_samples_dict[('Electrical', 'Weibull')] = electrical_dist.generate_sample(500)
-
-    frequency_dist = ExponentialDist(components_estimators['frequency'])
-    components_samples_dict[('Frequency', 'Exponential')] = frequency_dist.generate_sample(500)
 
     print('+' + '-' * 98 + '+')
     print('|' + ' ' * 41 + 'Chi-Square Tests' + ' ' * 41 + '|')
     print('+' + '-' * 98 + '+')
 
-    for component, component_sample in components_samples_dict.items():
-        print(f'Chi-Square Test Between Minimum Distribution and {component[0]} {component[1]} Distribution:')
-        print(chisquare(component_sample, minimum_dist))
-        print()
+    print("Normal Distribution:")
+    chi_normal_test = stats.chisquare(minimum_dist, np.random.normal(loc=dist_estimators['normal']['mu'], scale=dist_estimators['normal']['sigma'], size=500))
+    print(chi_normal_test)
+    print()
+
+    print("Logarithmic Distribution:")
+    chi_log_test = stats.chisquare(minimum_dist, np.random.lognormal(mean=dist_estimators['lognorm']['mu'], sigma=dist_estimators['lognorm']['sigma'], size=500))
+    print(chi_log_test)
+    print()
+
+    print("Weibull Distribution:")
+    chi_we_test = stats.chisquare(minimum_dist, stats.weibull_min.rvs(c=dist_estimators['weibull']['m'], loc=0, scale=dist_estimators['weibull']['ni'], size=500))
+    print(chi_we_test)
+    print()
+
+    print("Gumbel Distribution:")
+    chi_gumbel_max_test = stats.chisquare(minimum_dist, np.random.gumbel(loc=dist_estimators['gumbel']['mu'], scale=dist_estimators['gumbel']['beta'], size=500))
+    print(chi_gumbel_max_test)
+    print()
+
+    print("exponential distribution:")
+    chi_exp_test = stats.chisquare(minimum_dist, np.random.exponential(scale=1/dist_estimators['exponential']['lmd'], size=500))
+    print(chi_exp_test)
+    print()
 
     print('+' + '-' * 98 + '+')
     print('|' + ' ' * 37 + 'Kolmogorov–Smirnov Tests' + ' ' * 37 + '|')
     print('+' + '-' * 98 + '+')
 
-    for component, component_sample in components_samples_dict.items():
-        print(f'Kolmogorov–Smirnov Test Between Minimum Distribution and {component[0]} {component[1]} Distribution:')
-        print(stats.kstest(component_sample, minimum_dist))
-        print()
+    print("normal distribution:")
+    print(stats.ks_2samp(minimum_dist, np.random.normal(loc=dist_estimators['normal']['mu'], scale=dist_estimators['normal']['sigma'], size=500)))
+    print()
+
+    print("logarithmic distribution:")
+    print(stats.ks_2samp(minimum_dist, np.random.lognormal(mean=dist_estimators['lognorm']['mu'], sigma=dist_estimators['lognorm']['sigma'], size=500)))
+    print()
+
+    print("weibull distribution:")
+    print(stats.ks_2samp(minimum_dist, stats.weibull_min.rvs(c=dist_estimators['weibull']['m'], loc=0, scale=dist_estimators['weibull']['ni'], size=500)))
+    print()
+
+    print("gumbel max distribution:")
+    print(stats.ks_2samp(minimum_dist, np.random.gumbel(loc=dist_estimators['gumbel']['mu'], scale=dist_estimators['gumbel']['beta'], size=500)))
+    print()
+
+    print("exponential distribution:")
+    print(stats.ks_2samp(minimum_dist, np.random.exponential(scale=1/dist_estimators['exponential']['lmd'], size=500)))
+    print()
+
 
     print('+' + '-' * 98 + '+')
     print('|' + ' ' * 38 + 'Anderson–Darling Tests' + ' ' * 38 + '|')
     print('+' + '-' * 98 + '+')
 
-    for component, component_sample in components_samples_dict.items():
-        print(f'Anderson–Darling Test On {component[0]} {component[1]} Distribution:')
-        print(stats.anderson(component_sample))
-        print()
+    print("normal distribution:")
+    ad_normal_test = stats.anderson(minimum_dist, 'norm')
+    print(ad_normal_test)
+    print("")
+
+    print("logarithmic distribution:")
+    ad_log_test = stats.anderson(minimum_dist, 'logistic')
+    # ad_log_test = stats.anderson_ksamp([minimum_dist, np.random.lognormal(mean=dist_estimators['lognorm']['mu'], sigma=dist_estimators['lognorm']['sigma'], size=500)])
+    print(ad_log_test)
+    print("")
+
+    print("weibull distribution:")
+    ad_we_test = stats.anderson_ksamp([minimum_dist, stats.weibull_min.rvs(c=dist_estimators['weibull']['m'], loc=0, scale=dist_estimators['weibull']['ni'], size=500)])
+    print(ad_we_test)
+    print("")
+
+    print("gumbel max distribution:")
+    ad_gumbel_max_test = stats.anderson(minimum_dist, 'gumbel')
+    print(ad_gumbel_max_test)
+    print("")
+
+    print("exponential distribution:")
+    ad_exp_test = stats.anderson(minimum_dist, 'expon')
+    print(ad_exp_test)
+    print("")
 
 if __name__ == '__main__':
-    # ex1_b()
-    # ex1_c()
-    # ex1_d()
-    # ex1_e()
+    ex1_b()
+    ex1_c()
+    ex1_d()
+    ex1_e()
     ex2_b(*ex2_a())

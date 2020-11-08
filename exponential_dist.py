@@ -31,6 +31,16 @@ class ExponentialDist:
         else:
             return lmd_estimator
 
+
+    @staticmethod
+    def estimate_from_sample(dist_randoms):
+        n = len(dist_randoms)
+        dist_randoms = np.array(dist_randoms)
+
+        lmd_estimator = n / np.sum(dist_randoms)
+
+        return lmd_estimator
+
     def _generate_numbers(self, ksi):
         t = - (np.log(ksi) / self.lmd)
 

@@ -34,6 +34,19 @@ class WeibullDist:
             return ni_estimator, m_estimator
 
 
+    @staticmethod
+    def estimate_from_sample(dist_randoms):
+        n = len(dist_randoms)
+        dist_randoms = np.array(dist_randoms)
+
+        from scipy import stats
+        m_estimator, loc, ni_estimator = stats.weibull_min.fit(dist_randoms, floc=0)
+
+        # ni_estimator = np.power(np.sum(np.power(dist_randoms, self.m) / len(dist_randoms)), 1 / self.m)
+        # m_estimator = 1 / ((np.sum(np.power(dist_randoms, self.m) * np.log(dist_randoms)) / np.sum(np.power(dist_randoms, self.m))) - np.sum(np.log(dist_randoms)) / len(dist_randoms))
+
+        return ni_estimator, m_estimator
+
     def _generate_numbers(self, ksi):
         t = self.ni * np.power(-np.log(ksi), (1 / self.m))
 

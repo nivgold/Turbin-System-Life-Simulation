@@ -33,6 +33,21 @@ class GumbelDist:
         else:
             return mu_estimator, beta_estimator
 
+
+    @staticmethod
+    def estimate_from_sample(dist_randoms):
+        n = len(dist_randoms)
+        dist_randoms = np.array(dist_randoms)
+
+        from scipy import stats
+        mu_estimator, beta_estimator = stats.gumbel_r.fit(dist_randoms)
+
+        #
+        # beta_estimator = (np.sum(dist_randoms) / len(dist_randoms)) - (np.sum(dist_randoms * np.power(np.e, -(dist_randoms / self.beta))) / np.sum(np.power(np.e, -(dist_randoms / self.beta))))
+        # mu_estimator = -self.beta * np.log((np.sum(np.power(np.e, -(dist_randoms / self.beta)))) / (len(dist_randoms)))
+
+        return mu_estimator, beta_estimator
+
     def _generate_numbers(self, ksi):
         t = self.mu - self.beta * np.log(-np.log(ksi))
         return t
